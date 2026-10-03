@@ -11,9 +11,15 @@ class RiskEngine {
   const RiskEngine();
 
   /// Returns the final normalized risk score.
-  double calculateRisk(HazardReport report) {
+  ///
+  /// [now] is the reference time used to age the report for freshness. It
+  /// defaults to [DateTime.now]; pass a fixed value to evaluate the same
+  /// report deterministically (tests, or scoring many hazards in one pass).
+  double calculateRisk(HazardReport report, {DateTime? now}) {
+    final referenceTime = now ?? DateTime.now();
+
     final severity = _severityScore(report.hazardType, report.severity);
-    final freshness = _freshnessScore(report.capturedAt);
+    final freshness = _freshnessScore(report.capturedAt, referenceTime);
     final uncertainty = _uncertaintyScore(report);
 
     // V1 weights use only information currently available
@@ -89,8 +95,8 @@ class RiskEngine {
     }
   }
 
-  double _freshnessScore(DateTime capturedAt) {
-    final age = DateTime.now().difference(capturedAt).inHours;
+  double _freshnessScore(DateTime capturedAt, DateTime referenceTime) {
+    final age = referenceTime.difference(capturedAt).inHours;
 
     if (age <= 1) {
       return 1.00;

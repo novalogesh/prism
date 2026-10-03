@@ -3,8 +3,12 @@ import '../../../core/services/risk_engine.dart';
 import '../models/hazard.dart';
 import 'hazard_type_mapping.dart';
 
-Hazard mapHazardFromReport(HazardReport report, RiskEngine riskEngine) {
-  final riskScore = riskEngine.calculateRisk(report);
+Hazard mapHazardFromReport(
+  HazardReport report,
+  RiskEngine riskEngine, {
+  DateTime? now,
+}) {
+  final riskScore = riskEngine.calculateRisk(report, now: now);
 
   return Hazard(
     id: report.id,
