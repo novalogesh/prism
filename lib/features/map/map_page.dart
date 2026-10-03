@@ -64,6 +64,10 @@ class _MapPageState extends State<MapPage> {
   void initState() {
     super.initState();
 
+    // Subscribe before the first load so a write that lands while it is
+    // running is not missed.
+    ReportStorage.changes.addListener(_onReportsChanged);
+
     _initializeOfflineMap();
     _loadHazards();
     _getCurrentLocation();
@@ -110,6 +114,7 @@ class _MapPageState extends State<MapPage> {
 
   @override
   void dispose() {
+    ReportStorage.changes.removeListener(_onReportsChanged);
     _offlineStyle?.dispose();
     super.dispose();
   }
@@ -206,6 +211,13 @@ class _MapPageState extends State<MapPage> {
       hazards = loadedHazards;
       isLoading = false;
     });
+  }
+
+  // Reloads hazards after any successful ReportStorage write so the map does
+  // not need a manual refresh. Loading only reads storage, so this cannot
+  // trigger itself, and it leaves the location and camera alone.
+  void _onReportsChanged() {
+    _loadHazards();
   }
 
   Hazard _reportToHazard(HazardReport report) {
