@@ -45,7 +45,9 @@ class _MapPageState extends State<MapPage> {
 
   final MapController _mapController = MapController();
 
-  static const LatLng _defaultCenter = LatLng(13.0827, 80.2707);
+  // RMK Engineering College, as placed in the bundled prism_rmkcet.mbtiles.
+  // Must stay inside the bundled coverage (13.264-13.540 N, 80.051-80.225 E).
+  static const LatLng _defaultCenter = LatLng(13.3568, 80.1423);
 
   List<Hazard> hazards = [];
   Position? currentPosition;
